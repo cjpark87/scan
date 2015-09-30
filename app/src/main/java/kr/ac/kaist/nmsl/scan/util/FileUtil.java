@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -20,7 +21,7 @@ public class FileUtil {
     private static final String FILE_UTIL_DATA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final String FILE_UTIL_DATA_SEPARATOR = ",\n";
     private enum DATA_KEYS {
-        DATE("date"), TYPE("type"), VALUE("value");
+        DATE("date"), TYPE("type"), VALUE("value"), UUID("uuid");
 
         private String name;
         DATA_KEYS(String name) {
@@ -34,16 +35,21 @@ public class FileUtil {
     }
 
     public static void writeData (Context context, Date date, String sensorType, JSONObject value) {
+        File uuidDir = new File(context.getFilesDir() + "/" + UUIDGenerator.getUUID(context));
+        if (!uuidDir.exists() || !uuidDir.isDirectory())
+            uuidDir.mkdirs();
+
         SimpleDateFormat fileDateFormat = new SimpleDateFormat(FILE_UTIL_FILE_DATE_FORMAT);
         String dataFilename = String.format(FILE_UTIL_FILE_FORMAT, sensorType, fileDateFormat.format(date));
 
         try {
             SimpleDateFormat dataDateFormat = new SimpleDateFormat(FILE_UTIL_DATA_DATE_FORMAT);
 
-            FileOutputStream outputStream = context.openFileOutput(dataFilename, Context.MODE_APPEND);
+            FileOutputStream outputStream = new FileOutputStream(uuidDir.getAbsolutePath()+"/"+dataFilename, true);
 
             JSONObject dataJSON = new JSONObject();
             dataJSON.put(DATA_KEYS.DATE.toString(), dataDateFormat.format(date));
+            dataJSON.put(DATA_KEYS.UUID.toString(), UUIDGenerator.getUUID(context));
             dataJSON.put(DATA_KEYS.TYPE.toString(), sensorType);
             dataJSON.put(DATA_KEYS.VALUE.toString(), value);
 
