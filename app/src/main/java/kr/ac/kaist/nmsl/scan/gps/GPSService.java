@@ -86,11 +86,12 @@ public class GPSService extends Service {
 
     @Override
     public void onDestroy() {
+        if(wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+
         // TODO Auto-generated method stub
         super.onDestroy();
-
-        wakeLock.release();
-
     }
 
 }

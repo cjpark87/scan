@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp">
+    <TextView
+        android:id="@+id/txt_service_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_alignParentStart="true"
+        android:gravity="center_vertical"
+        android:text="@string/hello_world"
+        android:textSize="20dp"/>
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch_service"
+        android:gravity="center_vertical"
+        android:textOn="@string/on"
+        android:textOff="@string/off"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

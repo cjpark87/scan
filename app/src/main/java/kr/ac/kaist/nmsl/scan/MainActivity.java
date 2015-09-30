@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
 
@@ -15,7 +19,17 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startService(new Intent(this, GPSService.class));
+        List<ServiceBean> services = new ArrayList<ServiceBean>();
+
+        // Add services here
+        services.add(new ServiceBean(GPSService.class.getSimpleName(), new Intent(this, GPSService.class), false));
+
+
+        ListView listServices = (ListView) findViewById(R.id.list_services);
+        ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);
+        listServices.setAdapter(listAdapter);
+
+        listAdapter.notifyDataSetChanged();
     }
 
     @Override

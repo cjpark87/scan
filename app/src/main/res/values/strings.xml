@@ -7,4 +7,6 @@
     <string name="scan">SCAN</string>
 
     <string name="annotate">Annotate</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
 </resources>
