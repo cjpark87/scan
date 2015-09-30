@@ -8,9 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -26,7 +24,6 @@ public class GPSService extends Service {
     private static final float GPS_SERVICE_DISTANCE = 1.0f;
     private static final String GPS_SERVICE_NAME = "GPS";
 
-    PowerManager.WakeLock wakeLock;
     Context mContext;
 
     private LocationManager locationManager;
@@ -45,10 +42,6 @@ public class GPSService extends Service {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
-
-        PowerManager pm = (PowerManager) getSystemService(this.POWER_SERVICE);
-
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DoNotSleep");
     }
 
     @Override
@@ -108,10 +101,6 @@ public class GPSService extends Service {
 
     @Override
     public void onDestroy() {
-        if(wakeLock.isHeld()) {
-            wakeLock.release();
-        }
-
         // TODO Auto-generated method stub
         super.onDestroy();
     }
