@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
+import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
 public class MainActivity extends Activity {
 
@@ -42,6 +44,14 @@ public class MainActivity extends Activity {
 
         // Initialize annotate button
         initializeAnnotateButton();
+
+        // Initialize UUID
+        initializeUUID();
+    }
+
+    private void initializeUUID(){
+        TextView txtUUID = (TextView)findViewById(R.id.txt_uuid);
+        txtUUID.setText(UUIDGenerator.getUUID(this));
     }
 
     private void initializeAnnotateButton(){
