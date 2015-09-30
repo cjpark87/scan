@@ -13,4 +13,6 @@
     <string name="date">Date</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+
+    <string name="write_something">Write something...</string>
 </resources>

@@ -1,13 +1,22 @@
 package kr.ac.kaist.nmsl.scan;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
@@ -30,6 +39,53 @@ public class MainActivity extends Activity {
         listServices.setAdapter(listAdapter);
 
         listAdapter.notifyDataSetChanged();
+
+        // Initialize annotate button
+        initializeAnnotateButton();
+    }
+
+    private void initializeAnnotateButton(){
+        final Context context = this;
+        Button btnAnnotate = (Button) findViewById(R.id.btn_annotate);
+        btnAnnotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialogAnnotate = new Dialog(context);
+                dialogAnnotate.setContentView(R.layout.dialog_annotate);
+                dialogAnnotate.setTitle(R.string.annotate);
+
+                final EditText edtAnnotate = (EditText) dialogAnnotate.findViewById(R.id.edt_annotate);
+
+                // Set date
+                final EditText edtDate = (EditText) dialogAnnotate.findViewById(R.id.edt_date);
+                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                edtDate.setText(currentDateTimeString);
+
+                // cancel button
+                Button btnCancel = (Button) dialogAnnotate.findViewById(R.id.btn_cancel);
+                btnCancel.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        dialogAnnotate.dismiss();
+                    }
+                });
+
+                // save button
+                Button btnSave = (Button) dialogAnnotate.findViewById(R.id.btn_save);
+                btnSave.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        String message = edtAnnotate.getText().toString().trim();
+                        String date = edtDate.getText().toString().trim();
+                        Log.d(Constants.TAG, "Annotation: " + message + " (" + date + ")");
+
+                        dialogAnnotate.dismiss();
+                    }
+                });
+
+                dialogAnnotate.show();
+            }
+        });
     }
 
     @Override
