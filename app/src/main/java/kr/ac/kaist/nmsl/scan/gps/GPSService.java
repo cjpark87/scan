@@ -9,16 +9,30 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.util.*;
+
 import kr.ac.kaist.nmsl.scan.Constants;
+import kr.ac.kaist.nmsl.scan.util.FileUtil;
+
+
 
 public class GPSService extends Service {
+    private static final int GPS_SERVICE_INTERVAL = 15000;
+    private static final float GPS_SERVICE_DISTANCE = 1.0f;
+    private static final String GPS_SERVICE_NAME = "GPS";
+
     PowerManager.WakeLock wakeLock;
+    Context mContext;
 
     private LocationManager locationManager;
 
     public GPSService() {
+        mContext = this;
     }
 
     @Override
@@ -35,22 +49,17 @@ public class GPSService extends Service {
         PowerManager pm = (PowerManager) getSystemService(this.POWER_SERVICE);
 
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DoNotSleep");
-
-        Toast.makeText(getApplicationContext(), "SCAN GPS: Service Created", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    @Deprecated
     public int onStartCommand(Intent intent, int flags, int id) {
         super.onStartCommand(intent, flags, id);
-
-        Toast.makeText(getApplicationContext(), "SCAN GPS: Service Started", Toast.LENGTH_SHORT).show();
 
         locationManager = (LocationManager) getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.GPS_SERVICE_INTERVAL, Constants.GPS_SERVICE_DISTANCE, listener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.GPS_SERVICE_INTERVAL, Constants.GPS_SERVICE_DISTANCE, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, listener);
 
         return START_STICKY;
     }
@@ -62,7 +71,20 @@ public class GPSService extends Service {
            if (location == null)
                 return;
 
-            Toast.makeText(getApplicationContext(), "SCAN GPS: " + location.getLatitude() + ", " + location.getLongitude() + " (" + location.getProvider() + ", " + location.getAccuracy() + ")", Toast.LENGTH_SHORT).show();
+            JSONObject value = new JSONObject();
+            try {
+                value.put("provider", location.getProvider());
+                value.put("accuracy", location.getAccuracy());
+                value.put("latitude", location.getLatitude());
+                value.put("longitude", location.getLongitude());
+                value.put("altitude", location.getAltitude());
+                value.put("bearing", location.getBearing());
+                value.put("speed", location.getSpeed());
+            } catch (Exception e) {
+                Log.e(Constants.DEBUG_TAG, e.getMessage());
+            }
+
+            FileUtil.writeData(mContext, new Date(), GPS_SERVICE_NAME, value);
         }
 
         @Override
