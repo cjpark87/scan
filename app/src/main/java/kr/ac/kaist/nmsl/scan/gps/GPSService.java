@@ -20,9 +20,9 @@ import kr.ac.kaist.nmsl.scan.util.FileUtil;
 
 
 public class GPSService extends Service implements LocationListener {
-    private static final int GPS_SERVICE_INTERVAL = 15000;
-    private static final float GPS_SERVICE_DISTANCE = 0.0f;
-    private static final String GPS_SERVICE_NAME = "GPS";
+    private static final int mInterval = 15000;
+    private static final float mThreshold = 0.0f;
+    private static final String mSensorTypeName = "GPS";
 
     Context mContext;
 
@@ -51,8 +51,8 @@ public class GPSService extends Service implements LocationListener {
         locationManager = (LocationManager) getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, mInterval, mThreshold, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, mInterval, mThreshold, this);
 
         return START_STICKY;
     }
@@ -75,7 +75,7 @@ public class GPSService extends Service implements LocationListener {
             Log.e(Constants.DEBUG_TAG, e.getMessage());
         }
 
-        FileUtil.writeData(mContext, new Date(), GPS_SERVICE_NAME, value);
+        FileUtil.writeData(mContext, new Date(), mSensorTypeName, value);
     }
 
     @Override
