@@ -11,7 +11,7 @@ public class SignificantMotionService extends SensorService {
         mDataCount = 0; //x,y,z
         mSensorType = Sensor.TYPE_SIGNIFICANT_MOTION;
         mSensorTypeName = "SIGNIFICANT_MOTION";
-        mInterval = 100000000; //10 seconds in us
+        mInterval = 1000000; //10 seconds in us
     }
 
     @Override

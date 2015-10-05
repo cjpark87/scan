@@ -11,7 +11,7 @@ public class StepDectionService extends SensorService {
         mDataCount = 0; //x,y,z
         mSensorType = Sensor.TYPE_STEP_DETECTOR;
         mSensorTypeName = "STEP_DETECTION";
-        mInterval = 100000000; //10 seconds in us
+        mInterval = 1000000; //10 seconds in us
     }
 
     @Override

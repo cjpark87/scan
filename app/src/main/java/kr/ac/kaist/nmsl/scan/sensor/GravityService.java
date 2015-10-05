@@ -11,7 +11,7 @@ public class GravityService extends SensorService {
         mDataCount = 3; //x,y,z
         mSensorType = Sensor.TYPE_GRAVITY;
         mSensorTypeName = "GRAVITY";
-        mInterval = 100000000; //10 seconds in us
+        mInterval = 10000000; //10 seconds in us
     }
 
     @Override
