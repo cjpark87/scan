@@ -19,7 +19,7 @@ import kr.ac.kaist.nmsl.scan.util.FileUtil;
 
 
 
-public class GPSService extends Service {
+public class GPSService extends Service implements LocationListener {
     private static final int GPS_SERVICE_INTERVAL = 15000;
     private static final float GPS_SERVICE_DISTANCE = 1.0f;
     private static final String GPS_SERVICE_NAME = "GPS";
@@ -51,13 +51,11 @@ public class GPSService extends Service {
         locationManager = (LocationManager) getApplicationContext()
                 .getSystemService(Context.LOCATION_SERVICE);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, listener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, GPS_SERVICE_INTERVAL, GPS_SERVICE_DISTANCE, this);
 
         return START_STICKY;
     }
-
-    private LocationListener listener = new LocationListener() {
 
         @Override
         public void onLocationChanged(Location location) {
@@ -97,7 +95,6 @@ public class GPSService extends Service {
             // TODO Auto-generated method stub
 
         }
-    };
 
     @Override
     public void onDestroy() {
