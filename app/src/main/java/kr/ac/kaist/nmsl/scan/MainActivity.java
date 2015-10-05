@@ -15,11 +15,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import kr.ac.kaist.nmsl.scan.sensor.AccelerometerService;
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
 import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 
         // Add services here
         services.add(new ServiceBean(GPSService.class.getSimpleName(), new Intent(this, GPSService.class), false));
-
+        services.add(new ServiceBean(AccelerometerService.class.getSimpleName(), new Intent(this, AccelerometerService.class), false));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
         ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);
