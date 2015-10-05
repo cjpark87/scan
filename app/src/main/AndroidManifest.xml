@@ -58,6 +58,21 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service
+            android:name=".sensor.MagneticFieldService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.OrientationService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.ProximityService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

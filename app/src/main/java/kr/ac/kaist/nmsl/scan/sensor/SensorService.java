@@ -59,6 +59,8 @@ public class SensorService extends Service implements SensorEventListener {
         try {
             if (mDataCount == 0) {
                 value.put(mSensorTypeName, true);
+            } else if (mDataCount == 1) {
+                value.put(mSensorTypeName, event.values[0]);
             } else {
                 for (int i = 0; i < mDataCount; i++) {
 
