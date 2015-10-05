@@ -21,6 +21,11 @@ import java.util.List;
 
 import kr.ac.kaist.nmsl.scan.sensor.AccelerometerService;
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
+import kr.ac.kaist.nmsl.scan.sensor.GravityService;
+import kr.ac.kaist.nmsl.scan.sensor.GyroscopeService;
+import kr.ac.kaist.nmsl.scan.sensor.RotationVectorService;
+import kr.ac.kaist.nmsl.scan.sensor.SignificantMotionService;
+import kr.ac.kaist.nmsl.scan.sensor.StepDectionService;
 import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
 public class MainActivity extends Activity {
@@ -35,6 +40,11 @@ public class MainActivity extends Activity {
         // Add services here
         services.add(new ServiceBean(GPSService.class.getSimpleName(), new Intent(this, GPSService.class), false));
         services.add(new ServiceBean(AccelerometerService.class.getSimpleName(), new Intent(this, AccelerometerService.class), false));
+        services.add(new ServiceBean(GravityService.class.getSimpleName(), new Intent(this, GravityService.class), false));
+        services.add(new ServiceBean(GyroscopeService.class.getSimpleName(), new Intent(this, GyroscopeService.class), false));
+        services.add(new ServiceBean(RotationVectorService.class.getSimpleName(), new Intent(this, RotationVectorService.class), false));
+        services.add(new ServiceBean(SignificantMotionService.class.getSimpleName(), new Intent(this, SignificantMotionService.class), false));
+        services.add(new ServiceBean(StepDectionService.class.getSimpleName(), new Intent(this, StepDectionService.class), false));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
         ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);

@@ -33,6 +33,31 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service
+            android:name=".sensor.GravityService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.GyroscopeService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.RotationVectorService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.SignificantMotionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.StepDectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
