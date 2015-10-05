@@ -73,6 +73,26 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service
+            android:name=".sensor.TemperatureService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.LightService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.PressureService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".sensor.HumidityService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

@@ -23,12 +23,16 @@ import kr.ac.kaist.nmsl.scan.sensor.AccelerometerService;
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
 import kr.ac.kaist.nmsl.scan.sensor.GravityService;
 import kr.ac.kaist.nmsl.scan.sensor.GyroscopeService;
+import kr.ac.kaist.nmsl.scan.sensor.LightService;
 import kr.ac.kaist.nmsl.scan.sensor.MagneticFieldService;
 import kr.ac.kaist.nmsl.scan.sensor.OrientationService;
+import kr.ac.kaist.nmsl.scan.sensor.PressureService;
 import kr.ac.kaist.nmsl.scan.sensor.ProximityService;
+import kr.ac.kaist.nmsl.scan.sensor.HumidityService;
 import kr.ac.kaist.nmsl.scan.sensor.RotationVectorService;
 import kr.ac.kaist.nmsl.scan.sensor.SignificantMotionService;
 import kr.ac.kaist.nmsl.scan.sensor.StepDectionService;
+import kr.ac.kaist.nmsl.scan.sensor.TemperatureService;
 import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
 public class MainActivity extends Activity {
@@ -51,6 +55,10 @@ public class MainActivity extends Activity {
         services.add(new ServiceBean(MagneticFieldService.class.getSimpleName(), new Intent(this, MagneticFieldService.class), false));
         services.add(new ServiceBean(OrientationService.class.getSimpleName(), new Intent(this, OrientationService.class), false));
         services.add(new ServiceBean(ProximityService.class.getSimpleName(), new Intent(this, ProximityService.class), false));
+        services.add(new ServiceBean(LightService.class.getSimpleName(), new Intent(this, LightService.class), false));
+        services.add(new ServiceBean(PressureService.class.getSimpleName(), new Intent(this, PressureService.class), false));
+        services.add(new ServiceBean(TemperatureService.class.getSimpleName(), new Intent(this, TemperatureService.class), false));
+        services.add(new ServiceBean(HumidityService.class.getSimpleName(), new Intent(this, HumidityService.class), false));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
         ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);
