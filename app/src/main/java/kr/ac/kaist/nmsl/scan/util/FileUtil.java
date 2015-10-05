@@ -56,6 +56,8 @@ public class FileUtil {
             outputStream.write((dataJSON.toString() + FILE_UTIL_DATA_SEPARATOR).getBytes());
 
             outputStream.close();
+
+            Log.d(Constants.DEBUG_TAG, dataJSON.toString());
         } catch (Exception e) {
             Log.e(Constants.DEBUG_TAG, e.getMessage());
         }
