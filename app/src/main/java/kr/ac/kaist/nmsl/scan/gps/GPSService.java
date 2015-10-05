@@ -21,7 +21,7 @@ import kr.ac.kaist.nmsl.scan.util.FileUtil;
 
 public class GPSService extends Service implements LocationListener {
     private static final int GPS_SERVICE_INTERVAL = 15000;
-    private static final float GPS_SERVICE_DISTANCE = 1.0f;
+    private static final float GPS_SERVICE_DISTANCE = 0.0f;
     private static final String GPS_SERVICE_NAME = "GPS";
 
     Context mContext;
@@ -57,44 +57,44 @@ public class GPSService extends Service implements LocationListener {
         return START_STICKY;
     }
 
-        @Override
-        public void onLocationChanged(Location location) {
-           if (location == null)
-                return;
+    @Override
+    public void onLocationChanged(Location location) {
+       if (location == null)
+            return;
 
-            JSONObject value = new JSONObject();
-            try {
-                value.put("provider", location.getProvider());
-                value.put("accuracy", location.getAccuracy());
-                value.put("latitude", location.getLatitude());
-                value.put("longitude", location.getLongitude());
-                value.put("altitude", location.getAltitude());
-                value.put("bearing", location.getBearing());
-                value.put("speed", location.getSpeed());
-            } catch (Exception e) {
-                Log.e(Constants.DEBUG_TAG, e.getMessage());
-            }
-
-            FileUtil.writeData(mContext, new Date(), GPS_SERVICE_NAME, value);
+        JSONObject value = new JSONObject();
+        try {
+            value.put("provider", location.getProvider());
+            value.put("accuracy", location.getAccuracy());
+            value.put("latitude", location.getLatitude());
+            value.put("longitude", location.getLongitude());
+            value.put("altitude", location.getAltitude());
+            value.put("bearing", location.getBearing());
+            value.put("speed", location.getSpeed());
+        } catch (Exception e) {
+            Log.e(Constants.DEBUG_TAG, e.getMessage());
         }
 
-        @Override
-        public void onProviderDisabled(String provider) {
-            // TODO Auto-generated method stub
+        FileUtil.writeData(mContext, new Date(), GPS_SERVICE_NAME, value);
+    }
 
-        }
+    @Override
+    public void onProviderDisabled(String provider) {
+        // TODO Auto-generated method stub
 
-        @Override
-        public void onProviderEnabled(String provider) {
-            // TODO Auto-generated method stub
+    }
 
-        }
+    @Override
+    public void onProviderEnabled(String provider) {
+        // TODO Auto-generated method stub
 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            // TODO Auto-generated method stub
+    }
 
-        }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // TODO Auto-generated method stub
+
+    }
 
     @Override
     public void onDestroy() {
