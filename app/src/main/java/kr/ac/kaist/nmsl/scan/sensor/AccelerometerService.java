@@ -24,14 +24,6 @@ public class AccelerometerService extends SensorService {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mSensor, mInterval);
-        return START_STICKY;
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent event) {
        writeData(event);
     }

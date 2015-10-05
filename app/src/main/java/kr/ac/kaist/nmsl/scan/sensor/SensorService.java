@@ -1,6 +1,7 @@
 package kr.ac.kaist.nmsl.scan.sensor;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -32,6 +33,14 @@ public class SensorService extends Service implements SensorEventListener {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(mSensorType);
+        mSensorManager.registerListener(this, mSensor, mInterval);
+        return START_STICKY;
     }
 
     @Override
