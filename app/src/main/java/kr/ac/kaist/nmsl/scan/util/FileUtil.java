@@ -19,6 +19,7 @@ import kr.ac.kaist.nmsl.scan.Constants;
  */
 public class FileUtil {
     private static final String FILE_UTIL_FILE_DATE_FORMAT = "yyyyMMdd";
+    private static final String FILE_UTIL_FILE_DATETIME_FORMAT = "yyyyMMdd_HHmmss";
     private static final String FILE_UTIL_FILE_FORMAT = "%s_%s.%s";
     private static final String FILE_SUFFIX_JSON = "json";
     private static final String FILE_UTIL_DATA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -40,7 +41,7 @@ public class FileUtil {
     public static String getDataFilename (Context context, Date date, String sensorType, String suffix) {
         File uuidDir = new File(Environment.getExternalStoragePublicDirectory(Constants.TAG).getAbsolutePath() + "/" + UUIDGenerator.getUUID(context));
 
-        SimpleDateFormat fileDateFormat = new SimpleDateFormat(FILE_UTIL_FILE_DATE_FORMAT);
+        SimpleDateFormat fileDateFormat = new SimpleDateFormat(FILE_UTIL_FILE_DATETIME_FORMAT);
         String dataFilename = String.format(FILE_UTIL_FILE_FORMAT, sensorType, fileDateFormat.format(date), suffix);
 
         return uuidDir.getAbsolutePath()+"/"+dataFilename;

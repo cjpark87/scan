@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import kr.ac.kaist.nmsl.scan.mic.MicrophoneService;
 import kr.ac.kaist.nmsl.scan.sensor.AccelerometerService;
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
 import kr.ac.kaist.nmsl.scan.sensor.GravityService;
@@ -72,6 +73,7 @@ public class MainActivity extends Activity {
         services.add(new ServiceBean(PressureService.class.getSimpleName(), new Intent(this, PressureService.class), false));
         services.add(new ServiceBean(TemperatureService.class.getSimpleName(), new Intent(this, TemperatureService.class), false));
         services.add(new ServiceBean(HumidityService.class.getSimpleName(), new Intent(this, HumidityService.class), false));
+        services.add(new ServiceBean(MicrophoneService.class.getSimpleName(), new Intent(this, MicrophoneService.class), false));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
         ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);

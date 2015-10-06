@@ -53,6 +53,12 @@ public class SensorService extends Service implements SensorEventListener {
 
     }
 
+    @Override
+    public void onDestroy() {
+        mSensorManager.unregisterListener(this);
+        super.onDestroy();
+    }
+
     protected void writeData(SensorEvent event) {
         JSONObject value = new JSONObject();
 
