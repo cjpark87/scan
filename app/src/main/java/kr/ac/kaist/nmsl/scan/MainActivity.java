@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +43,17 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //initialize SCAN folder
+        File scanDir = new File(Environment.getExternalStoragePublicDirectory(Constants.TAG).getAbsolutePath());
+        if (!scanDir.exists() || !scanDir.isDirectory()) {
+            scanDir.mkdirs();
+        }
+
+        File uuidDir = new File(scanDir.getAbsolutePath() + "/" + UUIDGenerator.getUUID(this));
+        if (!uuidDir.exists() || !uuidDir.isDirectory()) {
+            uuidDir.mkdirs();
+        }
 
         List<ServiceBean> services = new ArrayList<ServiceBean>();
 

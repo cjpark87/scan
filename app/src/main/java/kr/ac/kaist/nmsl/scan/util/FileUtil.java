@@ -1,6 +1,8 @@
 package kr.ac.kaist.nmsl.scan.util;
 
 import android.content.Context;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -17,7 +19,8 @@ import kr.ac.kaist.nmsl.scan.Constants;
  */
 public class FileUtil {
     private static final String FILE_UTIL_FILE_DATE_FORMAT = "yyyyMMdd";
-    private static final String FILE_UTIL_FILE_FORMAT = "%s_%s.json";
+    private static final String FILE_UTIL_FILE_FORMAT = "%s_%s.%s";
+    private static final String FILE_SUFFIX_JSON = "json";
     private static final String FILE_UTIL_DATA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final String FILE_UTIL_DATA_SEPARATOR = ",\n";
     private enum DATA_KEYS {
@@ -34,13 +37,20 @@ public class FileUtil {
         }
     }
 
-    public static void writeData (Context context, Date date, String sensorType, JSONObject value) {
-        File uuidDir = new File(context.getFilesDir() + "/" + UUIDGenerator.getUUID(context));
-        if (!uuidDir.exists() || !uuidDir.isDirectory())
-            uuidDir.mkdirs();
+    public static String getDataFilename (Context context, Date date, String sensorType, String suffix) {
+        File uuidDir = new File(Environment.getExternalStoragePublicDirectory(Constants.TAG).getAbsolutePath() + "/" + UUIDGenerator.getUUID(context));
 
         SimpleDateFormat fileDateFormat = new SimpleDateFormat(FILE_UTIL_FILE_DATE_FORMAT);
-        String dataFilename = String.format(FILE_UTIL_FILE_FORMAT, sensorType, fileDateFormat.format(date));
+        String dataFilename = String.format(FILE_UTIL_FILE_FORMAT, sensorType, fileDateFormat.format(date), suffix);
+
+        return uuidDir.getAbsolutePath()+"/"+dataFilename;
+    }
+
+    public static void writeData (Context context, Date date, String sensorType, JSONObject value) {
+        File uuidDir = new File(Environment.getExternalStoragePublicDirectory(Constants.TAG).getAbsolutePath() + "/" + UUIDGenerator.getUUID(context));
+
+        SimpleDateFormat fileDateFormat = new SimpleDateFormat(FILE_UTIL_FILE_DATE_FORMAT);
+        String dataFilename = String.format(FILE_UTIL_FILE_FORMAT, sensorType, fileDateFormat.format(date),FILE_SUFFIX_JSON);
 
         try {
             SimpleDateFormat dataDateFormat = new SimpleDateFormat(FILE_UTIL_DATA_DATE_FORMAT);
@@ -56,7 +66,7 @@ public class FileUtil {
             outputStream.write((dataJSON.toString() + FILE_UTIL_DATA_SEPARATOR).getBytes());
 
             outputStream.close();
-
+            MediaScannerConnection.scanFile(context, new String[]{uuidDir.getAbsolutePath()+"/"+dataFilename}, null, null);
             Log.d(Constants.DEBUG_TAG, dataJSON.toString());
         } catch (Exception e) {
             Log.e(Constants.DEBUG_TAG, e.getMessage());
