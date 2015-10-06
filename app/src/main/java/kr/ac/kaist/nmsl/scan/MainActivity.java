@@ -1,6 +1,7 @@
 package kr.ac.kaist.nmsl.scan;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -66,21 +67,21 @@ public class MainActivity extends Activity {
         List<ServiceBean> services = new ArrayList<ServiceBean>();
 
         // Add services here
-        services.add(new ServiceBean(GPSService.class.getSimpleName(), new Intent(this, GPSService.class), false));
-        services.add(new ServiceBean(AccelerometerService.class.getSimpleName(), new Intent(this, AccelerometerService.class), false));
-        services.add(new ServiceBean(GravityService.class.getSimpleName(), new Intent(this, GravityService.class), false));
-        services.add(new ServiceBean(GyroscopeService.class.getSimpleName(), new Intent(this, GyroscopeService.class), false));
-        services.add(new ServiceBean(RotationVectorService.class.getSimpleName(), new Intent(this, RotationVectorService.class), false));
-        services.add(new ServiceBean(SignificantMotionService.class.getSimpleName(), new Intent(this, SignificantMotionService.class), false));
-        services.add(new ServiceBean(StepDectionService.class.getSimpleName(), new Intent(this, StepDectionService.class), false));
-        services.add(new ServiceBean(MagneticFieldService.class.getSimpleName(), new Intent(this, MagneticFieldService.class), false));
-        services.add(new ServiceBean(OrientationService.class.getSimpleName(), new Intent(this, OrientationService.class), false));
-        services.add(new ServiceBean(ProximityService.class.getSimpleName(), new Intent(this, ProximityService.class), false));
-        services.add(new ServiceBean(LightService.class.getSimpleName(), new Intent(this, LightService.class), false));
-        services.add(new ServiceBean(PressureService.class.getSimpleName(), new Intent(this, PressureService.class), false));
-        services.add(new ServiceBean(TemperatureService.class.getSimpleName(), new Intent(this, TemperatureService.class), false));
-        services.add(new ServiceBean(HumidityService.class.getSimpleName(), new Intent(this, HumidityService.class), false));
-        services.add(new ServiceBean(MicrophoneService.class.getSimpleName(), new Intent(this, MicrophoneService.class), false));
+        services.add(new ServiceBean(GPSService.class.getSimpleName(), GPSService.class));
+        services.add(new ServiceBean(AccelerometerService.class.getSimpleName(), AccelerometerService.class));
+        services.add(new ServiceBean(GravityService.class.getSimpleName(), GravityService.class));
+        services.add(new ServiceBean(GyroscopeService.class.getSimpleName(), GyroscopeService.class));
+        services.add(new ServiceBean(RotationVectorService.class.getSimpleName(),  RotationVectorService.class));
+        services.add(new ServiceBean(SignificantMotionService.class.getSimpleName(), SignificantMotionService.class));
+        services.add(new ServiceBean(StepDectionService.class.getSimpleName(), StepDectionService.class));
+        services.add(new ServiceBean(MagneticFieldService.class.getSimpleName(), MagneticFieldService.class));
+        services.add(new ServiceBean(OrientationService.class.getSimpleName(), OrientationService.class));
+        services.add(new ServiceBean(ProximityService.class.getSimpleName(), ProximityService.class));
+        services.add(new ServiceBean(LightService.class.getSimpleName(), LightService.class));
+        services.add(new ServiceBean(PressureService.class.getSimpleName(), PressureService.class));
+        services.add(new ServiceBean(TemperatureService.class.getSimpleName(), TemperatureService.class));
+        services.add(new ServiceBean(HumidityService.class.getSimpleName(), HumidityService.class));
+        services.add(new ServiceBean(MicrophoneService.class.getSimpleName(), MicrophoneService.class));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
         ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);
@@ -120,7 +121,7 @@ public class MainActivity extends Activity {
 
                 // cancel button
                 Button btnCancel = (Button) dialogAnnotate.findViewById(R.id.btn_cancel);
-                btnCancel.setOnClickListener(new View.OnClickListener(){
+                btnCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialogAnnotate.dismiss();
@@ -129,14 +130,14 @@ public class MainActivity extends Activity {
 
                 // save button
                 Button btnSave = (Button) dialogAnnotate.findViewById(R.id.btn_save);
-                btnSave.setOnClickListener(new View.OnClickListener(){
+                btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Date date = null;
                         String message = edtAnnotate.getText().toString().trim();
                         try {
                             date = sdf.parse(edtDate.getText().toString().trim());
-                        } catch (ParseException e){
+                        } catch (ParseException e) {
                             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -145,7 +146,7 @@ public class MainActivity extends Activity {
                         JSONObject msg = new JSONObject();
                         try {
                             msg.put("activity", message);
-                        } catch (JSONException e){
+                        } catch (JSONException e) {
                             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -183,4 +184,5 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

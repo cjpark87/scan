@@ -67,7 +67,7 @@ public class FileUtil {
             outputStream.write((dataJSON.toString() + FILE_UTIL_DATA_SEPARATOR).getBytes());
 
             outputStream.close();
-            MediaScannerConnection.scanFile(context, new String[]{uuidDir.getAbsolutePath()+"/"+dataFilename}, null, null);
+            MediaScannerConnection.scanFile(context, new String[]{uuidDir.getAbsolutePath() + "/" + dataFilename}, null, null);
             Log.d(Constants.DEBUG_TAG, dataJSON.toString());
         } catch (Exception e) {
             Log.e(Constants.DEBUG_TAG, e.getMessage());

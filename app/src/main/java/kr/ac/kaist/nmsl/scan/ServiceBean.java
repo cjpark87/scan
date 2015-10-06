@@ -1,5 +1,7 @@
 package kr.ac.kaist.nmsl.scan;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 
 /**
@@ -7,29 +9,18 @@ import android.content.Intent;
  */
 public class ServiceBean {
     private String serviceName;
-    private boolean isRunning;
 
-    private Intent serviceIntent;
+    private Class<?> serviceClass;
 
-    public ServiceBean(String serviceName, Intent serviceIntent, boolean isRunning){
+    public ServiceBean(String serviceName, Class<?> serviceClass){
         this.serviceName = serviceName;
-        this.serviceIntent = serviceIntent;
-        this.isRunning = isRunning;
+        this.serviceClass = serviceClass;
     }
 
-    public void setRunning(boolean isRunning){
-        this.isRunning = isRunning;
-    }
-
-    public Intent getServiceIntent(){
-        return this.serviceIntent;
-    }
+    public Class<?> getServiceClass() { return this.serviceClass; }
 
     public String getServiceName(){
         return this.serviceName;
     }
 
-    public boolean isRunning(){
-        return this.isRunning;
-    }
 }

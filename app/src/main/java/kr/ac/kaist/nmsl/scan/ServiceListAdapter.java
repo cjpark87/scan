@@ -1,5 +1,6 @@
 package kr.ac.kaist.nmsl.scan;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -56,24 +57,32 @@ public class ServiceListAdapter extends BaseAdapter{
         final ServiceBean serviceBean = this.services.get(position);
 
         txtServiceName.setText(serviceBean.getServiceName());
-        switchServiceStatus.setChecked(serviceBean.isRunning());
+        switchServiceStatus.setChecked(isServiceRunning(serviceBean.getServiceClass()));
         switchServiceStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // Start service
-                    Log.d(Constants.TAG, "Starting service: "+serviceBean.getServiceName());
-                    context.startService(serviceBean.getServiceIntent());
-                    serviceBean.setRunning(true);
+                    Log.d(Constants.TAG, "Starting service: " + serviceBean.getServiceName());
+                    context.startService(new Intent(context, serviceBean.getServiceClass()));
                 } else {
                     // Stop service
                     Log.d(Constants.TAG, "Stopping service: " + serviceBean.getServiceName());
-                    context.stopService(serviceBean.getServiceIntent());
-                    serviceBean.setRunning(false);
+                    context.stopService(new Intent(context, serviceBean.getServiceClass()));
                 }
             }
         });
 
         return rowView;
+    }
+
+    public boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
