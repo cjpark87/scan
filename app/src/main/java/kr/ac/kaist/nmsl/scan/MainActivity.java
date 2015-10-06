@@ -14,9 +14,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +42,7 @@ import kr.ac.kaist.nmsl.scan.sensor.RotationVectorService;
 import kr.ac.kaist.nmsl.scan.sensor.SignificantMotionService;
 import kr.ac.kaist.nmsl.scan.sensor.StepDectionService;
 import kr.ac.kaist.nmsl.scan.sensor.TemperatureService;
+import kr.ac.kaist.nmsl.scan.util.FileUtil;
 import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
 public class MainActivity extends Activity {
@@ -107,7 +114,8 @@ public class MainActivity extends Activity {
 
                 // Set date
                 final EditText edtDate = (EditText) dialogAnnotate.findViewById(R.id.edt_date);
-                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                final SimpleDateFormat sdf = new SimpleDateFormat(FileUtil.FILE_UTIL_DATA_DATE_FORMAT);
+                String currentDateTimeString = sdf.format(new Date());
                 edtDate.setText(currentDateTimeString);
 
                 // cancel button
@@ -124,10 +132,27 @@ public class MainActivity extends Activity {
                 btnSave.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
+                        Date date = null;
                         String message = edtAnnotate.getText().toString().trim();
-                        String date = edtDate.getText().toString().trim();
+                        try {
+                            date = sdf.parse(edtDate.getText().toString().trim());
+                        } catch (ParseException e){
+                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         Log.d(Constants.TAG, "Annotation: " + message + " (" + date + ")");
 
+                        JSONObject msg = new JSONObject();
+                        try {
+                            msg.put("activity", message);
+                        } catch (JSONException e){
+                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        FileUtil.writeData(context, date, "ACTIVITY_LOG", msg);
+
+                        Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
                         dialogAnnotate.dismiss();
                     }
                 });
