@@ -3,6 +3,7 @@ package kr.ac.kaist.nmsl.scan;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,9 +47,12 @@ import kr.ac.kaist.nmsl.scan.sensor.SignificantMotionService;
 import kr.ac.kaist.nmsl.scan.sensor.StepDectionService;
 import kr.ac.kaist.nmsl.scan.sensor.TemperatureService;
 import kr.ac.kaist.nmsl.scan.util.FileUtil;
+import kr.ac.kaist.nmsl.scan.util.ServiceUtil;
 import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
 public class MainActivity extends Activity {
+    private final  List<ServiceBean> services = new ArrayList<ServiceBean>();
+    private ServiceListAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +69,6 @@ public class MainActivity extends Activity {
         if (!uuidDir.exists() || !uuidDir.isDirectory()) {
             uuidDir.mkdirs();
         }
-
-        List<ServiceBean> services = new ArrayList<ServiceBean>();
 
         // Add services here
         services.add(new ServiceBean(GPSService.class.getSimpleName(), GPSService.class));
@@ -84,7 +88,7 @@ public class MainActivity extends Activity {
         services.add(new ServiceBean(MicrophoneService.class.getSimpleName(), MicrophoneService.class));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
-        ServiceListAdapter listAdapter = new ServiceListAdapter(this, services);
+        listAdapter = new ServiceListAdapter(this, services);
         listServices.setAdapter(listAdapter);
 
         listAdapter.notifyDataSetChanged();
@@ -92,13 +96,52 @@ public class MainActivity extends Activity {
         // Initialize annotate button
         initializeAnnotateButton();
 
+        // Initialize switch
+        initializeSwitchAll();
+
         // Initialize UUID
         initializeUUID();
+    }
+
+    private boolean isAllServiceRunning(){
+        for(ServiceBean serviceBean : this.services){
+            if(!ServiceUtil.isServiceRunning(this, serviceBean.getServiceClass())){
+                return false;
+            }
+        }
+        return true;
     }
 
     private void initializeUUID(){
         TextView txtUUID = (TextView)findViewById(R.id.txt_uuid);
         txtUUID.setText(UUIDGenerator.getUUID(this));
+    }
+
+    private void initializeSwitchAll(){
+        final Context context = this;
+        Switch switchAll = (Switch) findViewById(R.id.switch_all_service);
+        switchAll.setChecked(isAllServiceRunning());
+
+        switchAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Start all services
+                    for (ServiceBean serviceBean : services) {
+                        Log.d(Constants.TAG, "Starting service: " + serviceBean.getServiceName());
+                        context.startService(new Intent(context, serviceBean.getServiceClass()));
+                    }
+                } else {
+                    // Stop all services
+                    for (ServiceBean serviceBean : services) {
+                        Log.d(Constants.TAG, "Stopping service: " + serviceBean.getServiceName());
+                        context.stopService(new Intent(context, serviceBean.getServiceClass()));
+                    }
+                }
+
+                listAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void initializeAnnotateButton(){
