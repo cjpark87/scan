@@ -15,6 +15,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import kr.ac.kaist.nmsl.scan.util.ServiceUtil;
+
 /**
  * Created by wns349 on 2015-09-30.
  */
@@ -57,7 +59,7 @@ public class ServiceListAdapter extends BaseAdapter{
         final ServiceBean serviceBean = this.services.get(position);
 
         txtServiceName.setText(serviceBean.getServiceName());
-        switchServiceStatus.setChecked(isServiceRunning(serviceBean.getServiceClass()));
+        switchServiceStatus.setChecked(ServiceUtil.isServiceRunning(context, serviceBean.getServiceClass()));
         switchServiceStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -76,13 +78,4 @@ public class ServiceListAdapter extends BaseAdapter{
         return rowView;
     }
 
-    public boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
