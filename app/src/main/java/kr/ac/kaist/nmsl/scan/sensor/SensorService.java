@@ -69,16 +69,15 @@ public class SensorService extends Service implements SensorEventListener {
                 value.put(mSensorTypeName, event.values[0]);
             } else {
                 for (int i = 0; i < mDataCount; i++) {
-
                         switch (i) {
                             case 0:
-                                value.put("x" + i, event.values[i]);
+                                value.put("x", event.values[i]);
                                 break;
                             case 1:
-                                value.put("y" + i, event.values[i]);
+                                value.put("y", event.values[i]);
                                 break;
                             case 2:
-                                value.put("z" + i, event.values[i]);
+                                value.put("z", event.values[i]);
                                 break;
                             default:
                                 value.put("event" + i, event.values[i]);

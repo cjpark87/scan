@@ -3,7 +3,6 @@ package kr.ac.kaist.nmsl.scan.mic;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaRecorder;
-import android.media.MediaScannerConnection;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -16,6 +15,7 @@ import kr.ac.kaist.nmsl.scan.util.FileUtil;
 public class MicrophoneService extends Service {
     private MediaRecorder mRecorder;
     private String mSensorTypeName = "MIC";
+    private File mRecordFile;
 
     public MicrophoneService() {
     }
@@ -28,13 +28,11 @@ public class MicrophoneService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        File recordFile = new File(FileUtil.getDataFilename(this, new Date(), mSensorTypeName, "3gp"));
+        mRecordFile = new File(FileUtil.getDataFilename(this, new Date(), mSensorTypeName, "3gp"));
         mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(recordFile.getAbsolutePath());
-        mRecorder.setAudioSamplingRate(44100);
-        MediaScannerConnection.scanFile(this, new String[]{recordFile.getAbsolutePath()}, null, null);
+        mRecorder.setOutputFile(mRecordFile.getAbsolutePath());
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         try {
             mRecorder.prepare();
@@ -53,6 +51,9 @@ public class MicrophoneService extends Service {
         mRecorder.reset();
         mRecorder.release();
         mRecorder = null;
+
+        FileUtil.refreshDataFile(this, mRecordFile);
+
         super.onDestroy();
     }
 }
