@@ -1,7 +1,8 @@
 package kr.ac.kaist.nmsl.scan.util;
 
 import android.content.Context;
-import android.media.MediaScannerConnection;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -38,6 +39,12 @@ public class FileUtil {
         }
     }
 
+    public static void refreshDataFile (Context context, File file) {
+        File uuidDir = new File(Environment.getExternalStoragePublicDirectory(Constants.TAG).getAbsolutePath() + "/" + UUIDGenerator.getUUID(context));
+
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+file.getAbsolutePath())));
+    }
+
     public static String getDataFilename (Context context, Date date, String sensorType, String suffix) {
         File uuidDir = new File(Environment.getExternalStoragePublicDirectory(Constants.TAG).getAbsolutePath() + "/" + UUIDGenerator.getUUID(context));
 
@@ -56,7 +63,8 @@ public class FileUtil {
         try {
             SimpleDateFormat dataDateFormat = new SimpleDateFormat(FILE_UTIL_DATA_DATE_FORMAT);
 
-            FileOutputStream outputStream = new FileOutputStream(uuidDir.getAbsolutePath()+"/"+dataFilename, true);
+            File dataFile = new File(uuidDir.getAbsolutePath() + "/" + dataFilename);
+            FileOutputStream outputStream = new FileOutputStream(dataFile, true);
 
             JSONObject dataJSON = new JSONObject();
             dataJSON.put(DATA_KEYS.DATE.toString(), dataDateFormat.format(date));
@@ -67,7 +75,9 @@ public class FileUtil {
             outputStream.write((dataJSON.toString() + FILE_UTIL_DATA_SEPARATOR).getBytes());
 
             outputStream.close();
-            MediaScannerConnection.scanFile(context, new String[]{uuidDir.getAbsolutePath() + "/" + dataFilename}, null, null);
+
+            refreshDataFile(context, dataFile);
+
             Log.d(Constants.DEBUG_TAG, dataJSON.toString());
         } catch (Exception e) {
             Log.e(Constants.DEBUG_TAG, e.getMessage());
