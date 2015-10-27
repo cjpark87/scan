@@ -18,4 +18,5 @@
 
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
+    <string name="apps">Apps</string>
 </resources>

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -66,6 +67,8 @@ public class MainActivity extends Activity {
     private Object lock = new Object();
     private boolean isTurnedOn =  false;
 
+    private static final int ACTIVITY_RESULT_NOTIFICATION_LISTENER_SETTINGS = 142;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,23 +121,45 @@ public class MainActivity extends Activity {
 
         // Initialize Notification Listener ToggleButton
         initializeNotificationListenerButton();
+
+        // Initialize apps button
+        initializeAppsButton();
+    }
+
+    private void initializeAppsButton(){
+        Button btnApps = (Button)findViewById(R.id.btn_apps);
+        btnApps.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<PackageInfo> packs = getPackageManager().getInstalledPackages(0);
+                for(int i=0;i<packs.size();i++) {
+                    PackageInfo p = packs.get(i);
+                    Log.d(Constants.DEBUG_TAG, p.packageName);
+                }
+            }
+        });
     }
 
     private void initializeNotificationListenerButton(){
-        ToggleButton btnNotificationListener = (ToggleButton) findViewById(R.id.btn_notification_listener_service);
-        ComponentName cn = new ComponentName(this, NotificationListener.class);
-        String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
-        final boolean enabled = flat != null && flat.contains(cn.flattenToString());
-
-        btnNotificationListener.setChecked(enabled);
+        final ToggleButton btnNotificationListener = (ToggleButton) findViewById(R.id.btn_notification_listener_service);
+        updateNotificationListenerButton();
 
         btnNotificationListener.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent settingIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-                startActivity(settingIntent);
+                startActivityForResult(settingIntent, ACTIVITY_RESULT_NOTIFICATION_LISTENER_SETTINGS);
             }
         });
+    }
+
+    private void updateNotificationListenerButton(){
+        final ToggleButton btnNotificationListener = (ToggleButton) findViewById(R.id.btn_notification_listener_service);
+        ComponentName cn = new ComponentName(this, NotificationListener.class);
+        String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
+        final boolean enabled = flat != null && flat.contains(cn.flattenToString());
+
+        btnNotificationListener.setChecked(enabled);
     }
 
     private boolean isAllServiceRunning(){
@@ -238,6 +263,17 @@ public class MainActivity extends Activity {
                 dialogAnnotate.show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode ){
+            case ACTIVITY_RESULT_NOTIFICATION_LISTENER_SETTINGS:
+                updateNotificationListenerButton();
+                break;
+        }
     }
 
     @Override
