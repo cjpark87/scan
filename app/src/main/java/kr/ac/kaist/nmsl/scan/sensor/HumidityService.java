@@ -1,6 +1,5 @@
 package kr.ac.kaist.nmsl.scan.sensor;
 
-import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;

@@ -10,8 +10,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -36,36 +34,39 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kr.ac.kaist.nmsl.scan.gps.GPSService;
 import kr.ac.kaist.nmsl.scan.mic.MicrophoneService;
 import kr.ac.kaist.nmsl.scan.notification.NotificationListener;
 import kr.ac.kaist.nmsl.scan.sensor.AccelerometerService;
-import kr.ac.kaist.nmsl.scan.gps.GPSService;
 import kr.ac.kaist.nmsl.scan.sensor.GravityService;
 import kr.ac.kaist.nmsl.scan.sensor.GyroscopeService;
+import kr.ac.kaist.nmsl.scan.sensor.HumidityService;
 import kr.ac.kaist.nmsl.scan.sensor.LightService;
 import kr.ac.kaist.nmsl.scan.sensor.MagneticFieldService;
 import kr.ac.kaist.nmsl.scan.sensor.OrientationService;
 import kr.ac.kaist.nmsl.scan.sensor.PressureService;
 import kr.ac.kaist.nmsl.scan.sensor.ProximityService;
-import kr.ac.kaist.nmsl.scan.sensor.HumidityService;
 import kr.ac.kaist.nmsl.scan.sensor.RotationVectorService;
 import kr.ac.kaist.nmsl.scan.sensor.SignificantMotionService;
 import kr.ac.kaist.nmsl.scan.sensor.StepDectionService;
 import kr.ac.kaist.nmsl.scan.sensor.TemperatureService;
 import kr.ac.kaist.nmsl.scan.util.FileUtil;
 import kr.ac.kaist.nmsl.scan.util.ServiceUtil;
+import kr.ac.kaist.nmsl.scan.util.SharedPreferenceUtil;
 import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 
 public class MainActivity extends Activity {
-    private final  List<ServiceBean> services = new ArrayList<ServiceBean>();
+    private final List<ServiceBean> services = new ArrayList<ServiceBean>();
     private ServiceListAdapter listAdapter;
 
     private Object lock = new Object();
-    private boolean isTurnedOn =  false;
+    private boolean isTurnedOn = false;
 
     private static final int ACTIVITY_RESULT_NOTIFICATION_LISTENER_SETTINGS = 142;
 
@@ -90,7 +91,7 @@ public class MainActivity extends Activity {
         services.add(new ServiceBean(AccelerometerService.class.getSimpleName(), AccelerometerService.class));
         services.add(new ServiceBean(GravityService.class.getSimpleName(), GravityService.class));
         services.add(new ServiceBean(GyroscopeService.class.getSimpleName(), GyroscopeService.class));
-        services.add(new ServiceBean(RotationVectorService.class.getSimpleName(),  RotationVectorService.class));
+        services.add(new ServiceBean(RotationVectorService.class.getSimpleName(), RotationVectorService.class));
         services.add(new ServiceBean(SignificantMotionService.class.getSimpleName(), SignificantMotionService.class));
         services.add(new ServiceBean(StepDectionService.class.getSimpleName(), StepDectionService.class));
         services.add(new ServiceBean(MagneticFieldService.class.getSimpleName(), MagneticFieldService.class));
@@ -126,25 +127,93 @@ public class MainActivity extends Activity {
         initializeAppsButton();
     }
 
-    private void initializeAppsButton(){
-        Button btnApps = (Button)findViewById(R.id.btn_apps);
+    private void initializeAppsButton() {
+        Button btnApps = (Button) findViewById(R.id.btn_apps);
+        final Context context = this;
         btnApps.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<PackageInfo> packs = getPackageManager().getInstalledPackages(0);
-                for(int i=0;i<packs.size();i++) {
+                final List<AppBean> apps = new ArrayList<AppBean>(packs.size());
+                for (int i = 0; i < packs.size(); i++) {
                     PackageInfo p = packs.get(i);
-                    Log.d(Constants.DEBUG_TAG, p.packageName);
+                    String appName = p.applicationInfo.loadLabel(getPackageManager()).toString();
+                    apps.add(new AppBean(appName, p.packageName, isWhiteListed(p.packageName)));
                 }
+
+                final Dialog dialogApp = new Dialog(context);
+                dialogApp.setContentView(R.layout.dialog_apps);
+
+                // Listview
+                final AppListAdapter adapter = new AppListAdapter(context, apps);
+                ListView listApps = (ListView) dialogApp.findViewById(R.id.list_apps);
+                listApps.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                // Buttons
+                final Button btnSave = (Button) dialogApp.findViewById(R.id.btn_apps_save);
+                btnSave.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Save to shared preference
+                        Set<String> packages = new HashSet<String>();
+                        for (AppBean appBean : apps) {
+                            if (appBean.isWhiteListed()) {
+                                packages.add(appBean.getPackageName());
+                            }
+                        }
+
+                        SharedPreferenceUtil.saveWhiteListedPackages(context, packages);
+
+                        dialogApp.dismiss();
+                    }
+                });
+
+                final Button btnCancel = (Button) dialogApp.findViewById(R.id.btn_apps_cancel);
+                btnCancel.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogApp.dismiss();
+                    }
+                });
+
+                final Button btnCheckAll = (Button) dialogApp.findViewById(R.id.btn_apps_check_all);
+                btnCheckAll.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for (AppBean appBean : apps) {
+                            appBean.setWhiteListed(true);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+                final Button btnUncheckAll = (Button) dialogApp.findViewById(R.id.btn_apps_uncheck_all);
+                btnUncheckAll.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for (AppBean appBean : apps) {
+                            appBean.setWhiteListed(false);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+                dialogApp.show();
             }
         });
     }
 
-    private void initializeNotificationListenerButton(){
+    private boolean isWhiteListed(String packageName) {
+        Set<String> whiteListedPackages = SharedPreferenceUtil.getWhiteListedPackages(this);
+        return whiteListedPackages.contains(packageName);
+    }
+
+    private void initializeNotificationListenerButton() {
         final ToggleButton btnNotificationListener = (ToggleButton) findViewById(R.id.btn_notification_listener_service);
         updateNotificationListenerButton();
 
-        btnNotificationListener.setOnClickListener(new OnClickListener(){
+        btnNotificationListener.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent settingIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
@@ -153,7 +222,7 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void updateNotificationListenerButton(){
+    private void updateNotificationListenerButton() {
         final ToggleButton btnNotificationListener = (ToggleButton) findViewById(R.id.btn_notification_listener_service);
         ComponentName cn = new ComponentName(this, NotificationListener.class);
         String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
@@ -162,21 +231,21 @@ public class MainActivity extends Activity {
         btnNotificationListener.setChecked(enabled);
     }
 
-    private boolean isAllServiceRunning(){
-        for(ServiceBean serviceBean : this.services){
-            if(!ServiceUtil.isServiceRunning(this, serviceBean.getServiceClass())){
+    private boolean isAllServiceRunning() {
+        for (ServiceBean serviceBean : this.services) {
+            if (!ServiceUtil.isServiceRunning(this, serviceBean.getServiceClass())) {
                 return false;
             }
         }
         return true;
     }
 
-    private void initializeUUID(){
-        TextView txtUUID = (TextView)findViewById(R.id.txt_uuid);
+    private void initializeUUID() {
+        TextView txtUUID = (TextView) findViewById(R.id.txt_uuid);
         txtUUID.setText(UUIDGenerator.getUUID(this));
     }
 
-    private void initializeSwitchAll(){
+    private void initializeSwitchAll() {
         final Context context = this;
         Switch switchAll = (Switch) findViewById(R.id.switch_all_service);
         switchAll.setChecked(isAllServiceRunning());
@@ -203,7 +272,7 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void initializeAnnotateButton(){
+    private void initializeAnnotateButton() {
         final Context context = this;
         Button btnAnnotate = (Button) findViewById(R.id.btn_annotate);
         btnAnnotate.setOnClickListener(new OnClickListener() {
@@ -269,7 +338,7 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode ){
+        switch (requestCode) {
             case ACTIVITY_RESULT_NOTIFICATION_LISTENER_SETTINGS:
                 updateNotificationListenerButton();
                 break;
@@ -299,8 +368,8 @@ public class MainActivity extends Activity {
     }
 
     public void turnOnAllSensorService() {
-        synchronized(lock) {
-            if(!isTurnedOn) {
+        synchronized (lock) {
+            if (!isTurnedOn) {
                 for (ServiceBean serviceBean : services) {
                     Log.d(Constants.TAG, "Starting service: " + serviceBean.getServiceName());
                     startService(new Intent(this, serviceBean.getServiceClass()));
@@ -312,7 +381,7 @@ public class MainActivity extends Activity {
 
     public void turnOffAllSensorService() {
         synchronized (lock) {
-            if(isTurnedOn) {
+            if (isTurnedOn) {
                 for (ServiceBean serviceBean : services) {
                     Log.d(Constants.TAG, "Stopping service: " + serviceBean.getServiceName());
                     stopService(new Intent(this, serviceBean.getServiceClass()));
@@ -322,12 +391,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private BroadcastReceiver onNotice= new BroadcastReceiver() {
+    private BroadcastReceiver onNotice = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String pack = intent.getStringExtra("package");
-            Log.i(Constants.DEBUG_TAG, "[CJS] " + pack );
+            Log.i(Constants.DEBUG_TAG, "[CJS] " + pack);
 
             final Timer timer = new Timer();
             TimerTask timerTask = new TimerTask() {
@@ -347,7 +416,7 @@ public class MainActivity extends Activity {
 
             FileUtil.writeData(getApplicationContext(), new Date(), "PUSH", value);
             turnOnAllSensorService();
-            timer.schedule(timerTask, 10*1000);
+            timer.schedule(timerTask, 10 * 1000);
         }
     };
 }

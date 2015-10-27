@@ -1,6 +1,5 @@
 package kr.ac.kaist.nmsl.scan;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;

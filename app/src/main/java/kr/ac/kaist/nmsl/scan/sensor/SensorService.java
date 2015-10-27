@@ -12,7 +12,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.Date;
 
 import kr.ac.kaist.nmsl.scan.Constants;
 import kr.ac.kaist.nmsl.scan.util.FileUtil;

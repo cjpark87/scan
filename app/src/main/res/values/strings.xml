@@ -19,4 +19,6 @@
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="apps">Apps</string>
+    <string name="check_all">Check All</string>
+    <string name="uncheck_all">Uncheck All</string>
 </resources>

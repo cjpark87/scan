@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
 import kr.ac.kaist.nmsl.scan.Constants;
 

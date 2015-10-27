@@ -1,9 +1,5 @@
 package kr.ac.kaist.nmsl.scan;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Created by wns349 on 2015-09-30.
  */

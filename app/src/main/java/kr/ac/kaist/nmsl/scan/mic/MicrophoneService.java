@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.io.File;
-import java.util.*;
+import java.util.Date;
 
 import kr.ac.kaist.nmsl.scan.Constants;
 import kr.ac.kaist.nmsl.scan.util.FileUtil;
