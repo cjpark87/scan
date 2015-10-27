@@ -19,25 +19,25 @@ public class MicrophoneService extends Service {
     private MediaRecorder mRecorder;
     private String mSensorTypeName = "MIC";
     private File mRecordFile;
-    private Timer mTimer;
-    private TimerTask mTimerTask;
+    //private Timer mTimer;
+    //private TimerTask mTimerTask;
 
     public MicrophoneService() {
     }
 
     @Override
     public void onCreate() {
-        mTimer = new Timer();
-        mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if (mRecordFile != null && mRecorder != null) {
-                    endRecording();
-                }
-                initializeRecorder();
-                startRecording();
-            }
-        };
+//        mTimer = new Timer();
+//        mTimerTask = new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (mRecordFile != null && mRecorder != null) {
+//                    endRecording();
+//                }
+//                 initializeRecorder();
+                // startRecording();
+//            }
+//        };
         super.onCreate();
     }
 
@@ -49,8 +49,9 @@ public class MicrophoneService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mTimer.scheduleAtFixedRate(mTimerTask, INITIAL_DELAY, NEW_FILE_INTERVAL);
-
+        //mTimer.scheduleAtFixedRate(mTimerTask, INITIAL_DELAY, NEW_FILE_INTERVAL);
+        initializeRecorder();
+        startRecording();
         return START_STICKY;
     }
 
@@ -58,7 +59,7 @@ public class MicrophoneService extends Service {
     public void onDestroy() {
         endRecording();
 
-        mTimer.cancel();
+        //mTimer.cancel();
 
         super.onDestroy();
     }

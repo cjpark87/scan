@@ -1,13 +1,16 @@
 package kr.ac.kaist.nmsl.scan;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Dialog;
-import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,14 +27,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import kr.ac.kaist.nmsl.scan.mic.MicrophoneService;
+import kr.ac.kaist.nmsl.scan.notification.NotificationListener;
 import kr.ac.kaist.nmsl.scan.sensor.AccelerometerService;
 import kr.ac.kaist.nmsl.scan.gps.GPSService;
 import kr.ac.kaist.nmsl.scan.sensor.GravityService;
@@ -53,6 +58,9 @@ import kr.ac.kaist.nmsl.scan.util.UUIDGenerator;
 public class MainActivity extends Activity {
     private final  List<ServiceBean> services = new ArrayList<ServiceBean>();
     private ServiceListAdapter listAdapter;
+
+    private Object lock = new Object();
+    private boolean isTurnedOn =  false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +94,8 @@ public class MainActivity extends Activity {
         services.add(new ServiceBean(TemperatureService.class.getSimpleName(), TemperatureService.class));
         services.add(new ServiceBean(HumidityService.class.getSimpleName(), HumidityService.class));
         services.add(new ServiceBean(MicrophoneService.class.getSimpleName(), MicrophoneService.class));
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(onNotice, new IntentFilter("Msg"));
 
         ListView listServices = (ListView) findViewById(R.id.list_services);
         listAdapter = new ServiceListAdapter(this, services);
@@ -228,4 +238,56 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void turnOnAllSensorService() {
+        synchronized(lock) {
+            if(!isTurnedOn) {
+                for (ServiceBean serviceBean : services) {
+                    Log.d(Constants.TAG, "Starting service: " + serviceBean.getServiceName());
+                    startService(new Intent(this, serviceBean.getServiceClass()));
+                }
+                isTurnedOn = true;
+            }
+        }
+    }
+
+    public void turnOffAllSensorService() {
+        synchronized (lock) {
+            if(isTurnedOn) {
+                for (ServiceBean serviceBean : services) {
+                    Log.d(Constants.TAG, "Stopping service: " + serviceBean.getServiceName());
+                    stopService(new Intent(this, serviceBean.getServiceClass()));
+                }
+                isTurnedOn = false;
+            }
+        }
+    }
+
+    private BroadcastReceiver onNotice= new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String pack = intent.getStringExtra("package");
+            Log.i(Constants.DEBUG_TAG, "[CJS] " + pack );
+
+            final Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    turnOffAllSensorService();
+                    timer.cancel();
+                }
+            };
+
+            JSONObject value = new JSONObject();
+            try {
+                value.put("package", pack);
+            } catch (JSONException e) {
+                Log.e(Constants.DEBUG_TAG, e.getMessage());
+            }
+
+            FileUtil.writeData(getApplicationContext(), new Date(), "PUSH", value);
+            turnOnAllSensorService();
+            timer.schedule(timerTask, 10*1000);
+        }
+    };
 }

@@ -19,7 +19,7 @@ import kr.ac.kaist.nmsl.scan.Constants;
  * Created by cjpark on 2015-09-30.
  */
 public class FileUtil {
-    public static final String FILE_UTIL_FILE_DATE_FORMAT = "yyyyMMdd";
+    public static final String FILE_UTIL_FILE_DATE_FORMAT = "yyyyMMdd_HH";
     public static final String FILE_UTIL_FILE_DATETIME_FORMAT = "yyyyMMdd_HHmmss";
     public static final String FILE_UTIL_DATA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final String FILE_UTIL_FILE_FORMAT = "%s_%s.%s";
