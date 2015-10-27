@@ -3,6 +3,7 @@ package kr.ac.kaist.nmsl.scan;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,11 +11,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -22,6 +25,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,6 +115,26 @@ public class MainActivity extends Activity {
 
         // Initialize UUID
         initializeUUID();
+
+        // Initialize Notification Listener ToggleButton
+        initializeNotificationListenerButton();
+    }
+
+    private void initializeNotificationListenerButton(){
+        ToggleButton btnNotificationListener = (ToggleButton) findViewById(R.id.btn_notification_listener_service);
+        ComponentName cn = new ComponentName(this, NotificationListener.class);
+        String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
+        final boolean enabled = flat != null && flat.contains(cn.flattenToString());
+
+        btnNotificationListener.setChecked(enabled);
+
+        btnNotificationListener.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent settingIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                startActivity(settingIntent);
+            }
+        });
     }
 
     private boolean isAllServiceRunning(){
@@ -157,7 +181,7 @@ public class MainActivity extends Activity {
     private void initializeAnnotateButton(){
         final Context context = this;
         Button btnAnnotate = (Button) findViewById(R.id.btn_annotate);
-        btnAnnotate.setOnClickListener(new View.OnClickListener() {
+        btnAnnotate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Dialog dialogAnnotate = new Dialog(context);
@@ -174,7 +198,7 @@ public class MainActivity extends Activity {
 
                 // cancel button
                 Button btnCancel = (Button) dialogAnnotate.findViewById(R.id.btn_cancel);
-                btnCancel.setOnClickListener(new View.OnClickListener() {
+                btnCancel.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialogAnnotate.dismiss();
@@ -183,7 +207,7 @@ public class MainActivity extends Activity {
 
                 // save button
                 Button btnSave = (Button) dialogAnnotate.findViewById(R.id.btn_save);
-                btnSave.setOnClickListener(new View.OnClickListener() {
+                btnSave.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Date date = null;

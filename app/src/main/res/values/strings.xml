@@ -15,4 +15,7 @@
     <string name="cancel">Cancel</string>
 
     <string name="write_something">Write your activity</string>
+
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
 </resources>

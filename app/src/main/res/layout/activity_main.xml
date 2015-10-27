@@ -25,6 +25,15 @@
             android:textOff="@string/off"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"/>
+
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_notification_listener_service"
+            android:textOn ="@string/enabled"
+            android:textOff ="@string/disabled"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
 
 
