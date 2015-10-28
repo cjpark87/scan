@@ -22,4 +22,5 @@
     <string name="check_all">Check All</string>
     <string name="uncheck_all">Uncheck All</string>
     <string name="running">Running</string>
+    <string name="fake_push">Fake</string>
 </resources>

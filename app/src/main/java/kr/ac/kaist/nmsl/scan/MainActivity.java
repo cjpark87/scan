@@ -2,15 +2,19 @@ package kr.ac.kaist.nmsl.scan;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -33,9 +37,12 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -125,6 +132,43 @@ public class MainActivity extends Activity {
 
         // Initialize apps button
         initializeAppsButton();
+
+        // Initialize fake button
+        initializeFakePushButton();
+    }
+
+    private void initializeFakePushButton() {
+        Button btnFake = (Button) findViewById(R.id.btn_fake_push);
+        final Context context = this;
+        btnFake.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        NotificationCompat.Builder notiBuilder =
+                                new NotificationCompat.Builder(context)
+                                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                                        .setContentTitle("Push Test" + System.currentTimeMillis())
+                                        .setContentText(System.currentTimeMillis() + "")
+                                        .setOngoing(false)
+                                        .setLights(Color.RED, 3000, 3000)
+                                        .setVibrate(new long[]{1000, 1000, 1000});
+
+                        // Gets an instance of the NotificationManager service
+                        NotificationManager notificationManager =
+                                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+                        Random rnd = (new Random());
+                        // Builds the notification and issues it.
+                        notificationManager.notify(rnd.nextInt(10), notiBuilder.build());
+                    }
+                }, 3000);
+
+            }
+        });
+
     }
 
     private void initializeAppsButton() {
@@ -145,6 +189,12 @@ public class MainActivity extends Activity {
                 dialogApp.setContentView(R.layout.dialog_apps);
 
                 // Listview
+                Collections.sort(apps, new Comparator<AppBean>() {
+                    @Override
+                    public int compare(AppBean lhs, AppBean rhs) {
+                        return lhs.getAppName().compareTo(rhs.getAppName());
+                    }
+                });
                 final AppListAdapter adapter = new AppListAdapter(context, apps);
                 ListView listApps = (ListView) dialogApp.findViewById(R.id.list_apps);
                 listApps.setAdapter(adapter);

@@ -1,6 +1,7 @@
 package kr.ac.kaist.nmsl.scan.notification;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.service.notification.NotificationListenerService;
@@ -12,6 +13,7 @@ import android.util.Log;
 import java.util.Set;
 
 import kr.ac.kaist.nmsl.scan.Constants;
+import kr.ac.kaist.nmsl.scan.MainActivity;
 import kr.ac.kaist.nmsl.scan.R;
 import kr.ac.kaist.nmsl.scan.util.SharedPreferenceUtil;
 
@@ -28,13 +30,16 @@ public class NotificationListener extends NotificationListenerService {
         context = getApplicationContext();
 
         Log.d(Constants.DEBUG_TAG, "Creating NotificationListener");
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notiBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(android.R.drawable.ic_menu_view)
                         .setContentTitle(getString(R.string.app_name))
                         .setContentText(getString(R.string.running))
-                        .setOngoing(true);
+                        .setOngoing(true)
+                        .setContentIntent(contentIntent);
 
         // Gets an instance of the NotificationManager service
         mNotifyMgr =

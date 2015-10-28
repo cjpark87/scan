@@ -48,6 +48,12 @@
             android:id="@+id/btn_apps"
             android:layout_centerHorizontal="true"
             android:text="@string/apps" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_fake_push"
+            android:layout_alignParentEnd="true"
+            android:text="@string/fake_push"/>
         <TextView
             android:id="@+id/txt_uuid"
             android:layout_width="wrap_content"
